@@ -34,7 +34,8 @@ public class Chip implements ApplicationListener {
 	float unitScale = 32;
 	
 	//-- new variables------------------------------------
-	int startX, startY, previousX, previousY, speed;
+	float startX, startY, speed;
+		
 	//Rectangle playerRect;
 	MapLayer colLayer;
 	MapObjects objects;
@@ -42,6 +43,7 @@ public class Chip implements ApplicationListener {
 	String levelName = "socket1.tmx";
 	String collisionLayer = "collisions";
 	String playerImg = "Hero.png";
+	
 	
 	@Override
 	public void create () {
@@ -51,8 +53,7 @@ public class Chip implements ApplicationListener {
 		batch = new SpriteBatch();
 		
 		tiledMap = new TmxMapLoader().load(levelName);
-		
-		
+				
 	    otmr = new OrthogonalTiledMapRenderer(tiledMap);
 	    
 	    // new code-------------------------------------------
@@ -61,12 +62,10 @@ public class Chip implements ApplicationListener {
 		startX = 50; // starting X location
 		startY = 50; //  Starting Y coordinate
 		//initial value for previous locations set to starting x,y
-		previousX = startX;
-		previousY = startY;
-		//speed at which the character moves
+		// speed at which the character moves
 		speed = 80; // 320 would be about 1 block
 		
-		player = new Player(startX, startY, new Sprite(new Texture(playerImg)) );
+		player = new Player(startX, startY, new Sprite(new Texture(playerImg)), 'N' );
 			    
 		//Create a variable to hold a layer.  extract the collision layer into that variable
 		colLayer = tiledMap.getLayers().get("collisions");
@@ -97,14 +96,28 @@ public class Chip implements ApplicationListener {
 	    //------------- End Rendering, Start Game Logic -------------------------------------
 	    //Save the previous player location coords at the beginning
   		// this is so values can be reset if collision is detected.
-  		previousX = player.x;
-  		previousY = player.y;
-	  	   
+  		
+	  	
+	    
   		//user input from keyboard
-  	    if(Gdx.input.isKeyPressed(Keys.RIGHT)) player.x += speed / unitScale;// * Gdx.graphics.getDeltaTime();
-  	    if(Gdx.input.isKeyPressed(Keys.LEFT)) player.x -= speed / unitScale;// * Gdx.graphics.getDeltaTime();
-  	    if(Gdx.input.isKeyPressed(Keys.UP)) player.y += speed / unitScale;// * Gdx.graphics.getDeltaTime();
-  	    if(Gdx.input.isKeyPressed(Keys.DOWN)) player.y -= speed / unitScale;// * Gdx.graphics.getDeltaTime();
+  	    if(Gdx.input.isKeyPressed(Keys.RIGHT)){
+  	    	player.x += speed / unitScale;// * Gdx.graphics.getDeltaTime();
+  	    	player.heading = 'R';
+  	    }
+  	    if(Gdx.input.isKeyPressed(Keys.LEFT)){
+  	    	player.x -= speed / unitScale;// * Gdx.graphics.getDeltaTime();
+  	    	player.heading = 'L';
+  	    }
+  	    if(Gdx.input.isKeyPressed(Keys.UP)){
+  	    	player.y += speed / unitScale;// * Gdx.graphics.getDeltaTime();
+  	    	player.heading = 'U';
+  	    }
+  	    if(Gdx.input.isKeyPressed(Keys.DOWN)){
+  	    	player.y -= speed / unitScale;// * Gdx.graphics.getDeltaTime();
+  	    	player.heading = 'D';
+  	    }
+	    
+	   
 	    
 	    for (RectangleMapObject rectangleObject : objects.getByType(RectangleMapObject.class)){
 	    	
@@ -112,10 +125,25 @@ public class Chip implements ApplicationListener {
 	    	
 			player.pRectangle.setX(player.x); //set the player rect to whatever the player coords currently are
 	    	player.pRectangle.setY(player.y);	    	
-	    	if (Intersector.overlaps(rectangle, player.getRectangle() )) {
-	    		player.x = previousX;  
-		    	player.y = previousY;
-		    	//System.out.println("collision");
+	    	if (Intersector.overlaps(rectangle, player.pRectangle )) {
+	    		
+	    			    			
+	    		if(player.heading == 'U'){
+	    			player.y = rectangle.getY() - player.pRectangle.getHeight() ;
+	      	    }
+	    		if(player.heading == 'D'){
+	      	    	player.y = rectangle.getY() + rectangle.getHeight() ;
+	      	    }
+	    		if(player.heading == 'L'){
+	      	    	player.x = rectangle.getX() + rectangle.getWidth() ;  
+	      	    }
+	    		if(player.heading == 'R'){
+	    			player.x = rectangle.getX() - player.pRectangle.getWidth();
+	      	    }
+	      	    
+	    		
+		    	
+		    	
 	    	}// end if statement
 	    }// End for loop	
 	    

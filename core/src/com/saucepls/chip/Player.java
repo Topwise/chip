@@ -5,16 +5,18 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Player {
-	public int x;
-	public int y;
+	public float x;
+	public float y;
 	public Sprite img;
 	public Rectangle pRectangle;  // changed to public 8/3
+	public char heading;
 	
 	//constructor, receive input from player and set values
-	public Player(int coordX, int coordY, Sprite imag) {
+	public Player(float startX, float startY, Sprite imag, char dir) {
 		// TODO Auto-generated constructor stub
-		this.x = coordX;
-		this.y = coordY;
+		this.x = startX;
+		this.y = startY;
+		this.heading = dir;
 		this.img = imag;
 		//Collision box based on images width and height.
 		//will have to be adjusted if image includes other frames for animation.
@@ -29,12 +31,6 @@ public class Player {
 		
 	}
 
-	public Rectangle getRectangle() {
-		// TODO Auto-generated method stub
-		return pRectangle;
-	}
-	
-	
 	
 	
 }
