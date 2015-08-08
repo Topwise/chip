@@ -33,6 +33,7 @@ public class Chip implements ApplicationListener {
 	Player player;
 	float unitScale = 32;
 	
+	
 	//-- new variables------------------------------------
 	float startX, startY, speed;
 		
@@ -65,7 +66,7 @@ public class Chip implements ApplicationListener {
 		// speed at which the character moves
 		speed = 80; // 320 would be about 1 block
 		
-		player = new Player(startX, startY, new Sprite(new Texture(playerImg)), 'N' );
+		player = new Player(startX, startY, new Sprite(new Texture(playerImg)));
 			    
 		//Create a variable to hold a layer.  extract the collision layer into that variable
 		colLayer = tiledMap.getLayers().get("collisions");
@@ -99,52 +100,69 @@ public class Chip implements ApplicationListener {
   		
 	  	
 	    
-  		//user input from keyboard
+  		//Move Right
   	    if(Gdx.input.isKeyPressed(Keys.RIGHT)){
   	    	player.x += speed / unitScale;// * Gdx.graphics.getDeltaTime();
-  	    	player.heading = 'R';
   	    }
+  	    //Move Left
   	    if(Gdx.input.isKeyPressed(Keys.LEFT)){
   	    	player.x -= speed / unitScale;// * Gdx.graphics.getDeltaTime();
-  	    	player.heading = 'L';
   	    }
+  	    //Move Up
   	    if(Gdx.input.isKeyPressed(Keys.UP)){
   	    	player.y += speed / unitScale;// * Gdx.graphics.getDeltaTime();
-  	    	player.heading = 'U';
   	    }
+  	    //Move Down
   	    if(Gdx.input.isKeyPressed(Keys.DOWN)){
-  	    	player.y -= speed / unitScale;// * Gdx.graphics.getDeltaTime();
-  	    	player.heading = 'D';
+  	    	player.y -= speed / unitScale;// * Gdx.graphics.getDeltaTime();  	    	
   	    }
 	    
 	   
-	    
+	    /*
+	     * This for loop creates takes every rectangle object in the "collisions" layer of the map
+	     * Moves through each one "for each RectangleMapObject"
+	     * Creates a rectangle around it for measuring collision
+	     * 
+	     * The if statement, tests that Rectangle to see if it intersects with our players collision rectange pRectangle
+	     * if so, the intersection of the two rectangles is tested to see which side of the player its on.
+	     * 
+	     * Based on the side of the collision the player is then moved next to the rectangle he just hit.
+	     */
 	    for (RectangleMapObject rectangleObject : objects.getByType(RectangleMapObject.class)){
 	    	
 	    	Rectangle rectangle = rectangleObject.getRectangle();
 	    	
 			player.pRectangle.setX(player.x); //set the player rect to whatever the player coords currently are
-	    	player.pRectangle.setY(player.y);	    	
-	    	if (Intersector.overlaps(rectangle, player.pRectangle )) {
+	    	player.pRectangle.setY(player.y);	   
+	    	Rectangle intersection = new Rectangle();
+			
+			Intersector.intersectRectangles(player.pRectangle, rectangle, intersection);
+	    	if ( intersection.getHeight() > 0 || intersection.getWidth() > 0 ) {
 	    		
-	    			    			
-	    		if(player.heading == 'U'){
+	    		//Up, Top Collision    			
+	    		if(intersection.y > (player.pRectangle.getHeight()/2 + player.pRectangle.getY()) &&
+	    				intersection.getWidth() > intersection.getHeight()){
 	    			player.y = rectangle.getY() - player.pRectangle.getHeight() ;
 	      	    }
-	    		if(player.heading == 'D'){
-	      	    	player.y = rectangle.getY() + rectangle.getHeight() ;
+	    		//Down, Bottom Collision
+	    		if(intersection.y < (player.pRectangle.getHeight()/2 + player.pRectangle.getY()) &&
+	    				intersection.getWidth() > intersection.getHeight()){
+	    			player.y = rectangle.getY() + rectangle.getHeight() ;
 	      	    }
-	    		if(player.heading == 'L'){
-	      	    	player.x = rectangle.getX() + rectangle.getWidth() ;  
+	    		//Left Collision
+	    		if(intersection.x < (player.pRectangle.getWidth()/2 + player.pRectangle.getX()) &&
+	    				intersection.getWidth() < intersection.getHeight()){
+	    			player.x = rectangle.getX() + rectangle.getWidth() ;  
 	      	    }
-	    		if(player.heading == 'R'){
+	    		//Right Collision
+	      	    if(intersection.x > (player.pRectangle.getWidth()/2 + player.pRectangle.getX()) &&
+		    			intersection.getWidth() < intersection.getHeight()){
 	    			player.x = rectangle.getX() - player.pRectangle.getWidth();
 	      	    }
-	      	    
 	    		
-		    	
-		    	
 	    	}// end if statement
+	     
+			
 	    }// End for loop	
 	    
 	}
@@ -154,6 +172,7 @@ public class Chip implements ApplicationListener {
 		batch.dispose();
 		otmr.dispose();
 		tiledMap.dispose();
+		
 	}
 
 	@Override
