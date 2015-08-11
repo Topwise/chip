@@ -32,16 +32,16 @@ public class Chip implements ApplicationListener {
 	OrthogonalTiledMapRenderer otmr;
 	Player player;
 	float unitScale = 32;
-	
+	boolean action;     //  Action button ----------------------------
 	
 	//-- new variables------------------------------------
 	float startX, startY, speed;
 		
 	//Rectangle playerRect;
 	MapLayer colLayer;
-	MapObjects objects;
+	MapObjects colObjects;
 	// strings for input
-	String levelName = "socket1.tmx";
+	String levelName = "socket2.tmx";
 	String collisionLayer = "collisions";
 	String playerImg = "Hero.png";
 	
@@ -49,7 +49,7 @@ public class Chip implements ApplicationListener {
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 50 * unitScale/2, 50 * unitScale/2);
+		camera.setToOrtho(false, 25 * unitScale, 25 * unitScale);
 		
 		batch = new SpriteBatch();
 		
@@ -64,14 +64,14 @@ public class Chip implements ApplicationListener {
 		startY = 50; //  Starting Y coordinate
 		//initial value for previous locations set to starting x,y
 		// speed at which the character moves
-		speed = 80; // 320 would be about 1 block
+		speed = 3; 
 		
 		player = new Player(startX, startY, new Sprite(new Texture(playerImg)));
-			    
+		action = false;
 		//Create a variable to hold a layer.  extract the collision layer into that variable
 		colLayer = tiledMap.getLayers().get("collisions");
-		// create a variable for objects, extract all objects in the collision layer to that variable
-		objects = colLayer.getObjects();
+		// create a variable for colObjects, extract all objects in the collision layer to that variable
+		colObjects = colLayer.getObjects();
 	    
 	}
 	
@@ -102,20 +102,27 @@ public class Chip implements ApplicationListener {
 	    
   		//Move Right
   	    if(Gdx.input.isKeyPressed(Keys.RIGHT)){
-  	    	player.x += speed / unitScale;// * Gdx.graphics.getDeltaTime();
+  	    	player.x += speed;// * Gdx.graphics.getDeltaTime();
   	    }
   	    //Move Left
   	    if(Gdx.input.isKeyPressed(Keys.LEFT)){
-  	    	player.x -= speed / unitScale;// * Gdx.graphics.getDeltaTime();
+  	    	player.x -= speed;// * Gdx.graphics.getDeltaTime();
   	    }
   	    //Move Up
   	    if(Gdx.input.isKeyPressed(Keys.UP)){
-  	    	player.y += speed / unitScale;// * Gdx.graphics.getDeltaTime();
+  	    	player.y += speed;// * Gdx.graphics.getDeltaTime();
   	    }
   	    //Move Down
   	    if(Gdx.input.isKeyPressed(Keys.DOWN)){
-  	    	player.y -= speed / unitScale;// * Gdx.graphics.getDeltaTime();  	    	
+  	    	player.y -= speed;// * Gdx.graphics.getDeltaTime();  	    	
   	    }
+  	    
+  	    //-----------Action button
+  	   
+  	    if(Gdx.input.isKeyPressed(Keys.SPACE)){
+  	    	action = true;
+  	    }
+  	    
 	    
 	   
 	    /*
@@ -128,43 +135,77 @@ public class Chip implements ApplicationListener {
 	     * 
 	     * Based on the side of the collision the player is then moved next to the rectangle he just hit.
 	     */
-	    for (RectangleMapObject rectangleObject : objects.getByType(RectangleMapObject.class)){
+  	    
+  	    //rectangleObject is pulled from colObjects (all the rectangle objects) that were gathered from the collision layer.
+	    for (RectangleMapObject rectangleObject : colObjects.getByType(RectangleMapObject.class)){
 	    	
-	    	Rectangle rectangle = rectangleObject.getRectangle();
+	    	//colRectangle is the collision rectangle created from the rectangle object
+	    	Rectangle colRectangle = rectangleObject.getRectangle();
 	    	
 			player.pRectangle.setX(player.x); //set the player rect to whatever the player coords currently are
-	    	player.pRectangle.setY(player.y);	   
+	    	player.pRectangle.setY(player.y);
+	    	player.actRectangle.setX(player.pRectangle.getX() - 1);
+	    	player.actRectangle.setY(player.pRectangle.getY() - 1);
 	    	Rectangle intersection = new Rectangle();
 			
-			Intersector.intersectRectangles(player.pRectangle, rectangle, intersection);
+			Intersector.intersectRectangles(player.pRectangle, colRectangle, intersection);
 	    	if ( intersection.getHeight() > 0 || intersection.getWidth() > 0 ) {
 	    		
-	    		//Up, Top Collision    			
-	    		if(intersection.y > (player.pRectangle.getHeight()/2 + player.pRectangle.getY()) &&
-	    				intersection.getWidth() > intersection.getHeight()){
-	    			player.y = rectangle.getY() - player.pRectangle.getHeight() ;
-	      	    }
-	    		//Down, Bottom Collision
-	    		if(intersection.y < (player.pRectangle.getHeight()/2 + player.pRectangle.getY()) &&
-	    				intersection.getWidth() > intersection.getHeight()){
-	    			player.y = rectangle.getY() + rectangle.getHeight() ;
-	      	    }
-	    		//Left Collision
-	    		if(intersection.x < (player.pRectangle.getWidth()/2 + player.pRectangle.getX()) &&
-	    				intersection.getWidth() < intersection.getHeight()){
-	    			player.x = rectangle.getX() + rectangle.getWidth() ;  
-	      	    }
-	    		//Right Collision
-	      	    if(intersection.x > (player.pRectangle.getWidth()/2 + player.pRectangle.getX()) &&
-		    			intersection.getWidth() < intersection.getHeight()){
-	    			player.x = rectangle.getX() - player.pRectangle.getWidth();
-	      	    }
 	    		
+	    		
+	    		//because string is a pointer you can't do check = "" have to do check.equals("")
+	    		if(rectangleObject.getName() != null && rectangleObject.getName().equals("door") ){
+	    			
+	    			System.out.println("check " + rectangleObject.getName());
+	    			
+	    		}else{// if the object name is null, which all walls are. 
+	    				    			
+	    			//Up, Top Collision    			
+	    			if(intersection.y > (player.pRectangle.getHeight()/2 + player.pRectangle.getY()) &&
+	    					intersection.getWidth() > intersection.getHeight()){
+	    				player.y = colRectangle.getY() - player.pRectangle.getHeight() ;
+	    			}
+	    			//Down, Bottom Collision
+	    			if(intersection.y < (player.pRectangle.getHeight()/2 + player.pRectangle.getY()) &&
+	    					intersection.getWidth() > intersection.getHeight()){
+	    				player.y = colRectangle.getY() + colRectangle.getHeight() ;
+	    			}
+	    			//Left Collision
+	    			if(intersection.x < (player.pRectangle.getWidth()/2 + player.pRectangle.getX()) &&
+	    					intersection.getWidth() < intersection.getHeight()){
+	    				player.x = colRectangle.getX() + colRectangle.getWidth() ;  
+	    			}
+	    			//Right Collision
+	    			if(intersection.x > (player.pRectangle.getWidth()/2 + player.pRectangle.getX()) &&
+	    					intersection.getWidth() < intersection.getHeight()){
+	    				player.x = colRectangle.getX() - player.pRectangle.getWidth();
+	    			}
+	    			
+	    		}//end else 
+	      	    
 	    	}// end if statement
 	     
-			
 	    }// End for loop	
 	    
+	    for (RectangleMapObject rectangleObject : colObjects.getByType(RectangleMapObject.class)){
+	    	Rectangle colisRectangle = rectangleObject.getRectangle();
+	     	Rectangle intersect = new Rectangle();
+			Intersector.intersectRectangles(player.actRectangle, colisRectangle, intersect);
+	    	if ( intersect.getHeight() > 0 || intersect.getWidth() > 0 ) {
+	    		if(action){
+    		    	if(rectangleObject.getName() != null && rectangleObject.getName().equals("closedDoor")){
+    					rectangleObject.setName("door");
+    					System.out.println(rectangleObject.getName());
+    					System.out.println(action);
+    					action = false;
+    		    	}else if(rectangleObject.getName() != null && rectangleObject.getName().equals("door")) {
+    		    		rectangleObject.setName("closedDoor");
+    		    		System.out.println("closing door");
+    		    		action = false;
+    		    	}
+    		    }
+	    	}
+  	    }
 	}
 	
 	@Override

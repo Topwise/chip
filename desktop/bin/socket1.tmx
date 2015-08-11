@@ -25,5 +25,6 @@
   <object x="768" y="0" width="32" height="768"/>
   <object x="0" y="0" width="32" height="768"/>
   <object x="32" y="0" width="736" height="32"/>
+  <object x="576" y="544" width="32" height="192"/>
  </objectgroup>
 </map>

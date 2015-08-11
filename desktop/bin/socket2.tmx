@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="25" height="25" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" source="originalLabrynth.tsx"/>
+ <layer name="Tile Layer 1" width="25" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzjZWBg4KUDFsCDqSE/agf17KAUDxZ/jNqBagd6fiSUX8mRHy5hNdB2UIoHiz+Gkh2U1mGUmkGPOB+1g/520BoDAM2fJTE=
+  </data>
+ </layer>
+ <objectgroup name="collisions">
+  <object x="0" y="0" width="32" height="800"/>
+  <object x="32" y="0" width="768" height="32"/>
+  <object x="768" y="32" width="32" height="768"/>
+  <object x="32" y="768" width="736" height="32"/>
+  <object x="256" y="32" width="32" height="128"/>
+  <object x="256" y="192" width="32" height="256"/>
+  <object x="256" y="480" width="32" height="128"/>
+  <object x="32" y="576" width="224" height="32"/>
+  <object x="512" y="480" width="32" height="128"/>
+  <object x="544" y="576" width="224" height="32"/>
+  <object x="512" y="192" width="32" height="256"/>
+  <object x="512" y="32" width="32" height="128"/>
+  <object x="416" y="320" width="224" height="32"/>
+  <object x="160" y="320" width="224" height="32"/>
+  <object x="32" y="320" width="96" height="32"/>
+  <object x="672" y="320" width="96" height="32"/>
+  <object name="closedDoor" x="512" y="448" width="32" height="32"/>
+ </objectgroup>
+</map>
