@@ -178,9 +178,9 @@ public class Chip implements ApplicationListener {
 	    			//Right Collision
 	    			if(intersection.x > (player.pRectangle.getWidth()/2 + player.pRectangle.getX()) &&
 	    					intersection.getWidth() < intersection.getHeight()){
-	    				player.x = colRectangle.getX() - player.pRectangle.getWidth();
+	    		 		player.x = colRectangle.getX() - player.pRectangle.getWidth();
 	    			}
-	    			
+	    			 
 	    		}//end else 
 	      	    
 	    	}// end if statement

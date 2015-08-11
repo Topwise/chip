@@ -21,7 +21,7 @@ public class Player {
 		//Collision box based on images width and height.
 		//will have to be adjusted if image includes other frames for animation.
 		this.pRectangle = img.getBoundingRectangle();
-		this.actRectangle = new Rectangle( pRectangle.getX() - 1 , pRectangle.y - 1 , pRectangle.getWidth() + 2 , pRectangle.getHeight() + 2 ) ;
+		this.actRectangle = new Rectangle( pRectangle.getX() - 2 , pRectangle.y - 2 , pRectangle.getWidth() + 3 , pRectangle.getHeight() + 3 ) ;
 	}
 
 	
